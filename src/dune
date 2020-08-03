@@ -1,4 +1,4 @@
 (library
   (public_name scylla)
   (synopsis "Scylla/Cassandra database driver written in OCaml")
-  (libraries angstrom faraday lwt))
+  (libraries angstrom faraday lwt uutf))
