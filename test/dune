@@ -1,0 +1,3 @@
+(tests
+  (names testsuite)
+  (libraries ounit2 scylla lwt lwt.unix))
