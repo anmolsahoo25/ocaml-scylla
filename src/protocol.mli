@@ -1,39 +1,81 @@
 type bigstring = Angstrom.bigstring
 
-type req
-
-type res
-
-type 'a op =
-  | Startup : req op
-  | Auth_response : req op
-  | Options : req op
-  | Query : req op
-  | Prepare : req op
-  | Execute : req op
-  | Batch : req op
-  | Register : req op
-  | Error : res op
-  | Ready : res op
-  | Authenticate : res op
-  | Supported : res op
-  | Result : res op
-  | Event : res op
-  | Auth_challenge : res op
-  | Auth_success : res op
+type value =
+  | Null
+  | Ascii of bigstring
+  | Bigint of int64
+  | Blob of bigstring
+  | Boolean of bool
+  | Counter of int64
+  (* | Decimal of *)
+  | Double of float
+  | Float of float
+  | Int of int32
+  | Timestamp of int64
+  (* | Uuid of *)
+  | Varchar of bigstring
+  | Varint of bigstring
+  | Timeuuid
+  | Inet
+  | Date
+  | Time
+  | Smallint of int
+  | Tinyint of char
+  | List
+  | Map
+  | Set
 
 type flag = Compressed | Tracing | Custom | Warning
 
-type empty
+type opcode =
+  | Error
+  | Startup
+  | Ready
+  | Authenticate
+  | Options
+  | Supported
+  | Query
+  | Result
+  | Prepare
+  | Execute
+  | Register
+  | Event
+  | Batch
+  | Auth_challenge
+  | Auth_response
+  | Auth_success
 
-type map
+type result_body =
+  | Void
+  | Rows of {table_spec : (bigstring * bigstring * bigstring) array; values: value array array; paging_state : bigstring option}
+  | Set_keyspace of bigstring
+  | Prepared of { id : bigstring }
+  | Schema_change
 
-type multimap
+type consistency =
+  | Any
+  | One
+  | Two
+  | Three
+  | Quorom
+  | All
+  | Local_quorom
+  | Each_quorom
+  | Serial
+  | Local_serial
+  | Local_one
 
-type 'a body =
-  | Empty : empty body
-  | Map : (bigstring * bigstring) list -> map body
-  | MultiMap : (bigstring * (bigstring list)) list -> multimap body
+type query_params = { consistency : consistency }
 
-type ('a, 'b) packet =
-  | Req : {flags : flag list; stream: int; op : req op ; body: 'b body } -> (req, 'b) packet
+type body =
+  | Empty
+  | Map of (bigstring * bigstring) list
+  | MultiMap of (bigstring * bigstring list) list
+  | LongString of bigstring
+  | String of bigstring
+  | Result of result_body
+  | Query of { query : bigstring; params : query_params }
+
+type packet =
+  | Req of { flags : flag list; stream : int; op : opcode; body : body }
+  | Res of { flags : flag list; stream : int; op : opcode; body : body }
