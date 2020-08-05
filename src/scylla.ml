@@ -8,3 +8,6 @@ let connect ~ip:ip ~port:port =
   (* let startup = Protocol.(Req { flags = [] ; stream = 0; op = Startup ; body = Empty }) in
   let startup_bytes = Serialize.(to_bytes startup) *)
   {ic ; oc}
+
+let query _conn ~query:(_query) =
+  [||]
