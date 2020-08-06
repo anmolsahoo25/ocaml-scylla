@@ -7,5 +7,5 @@ type value = Protocol.value
 val connect : ip:string -> port:int -> (t, string) result
 (** Connect to a scylla node *)
 
-val query : t -> query:string -> value array array
+val query : t -> query:string -> (value array array, string) result
 (** Execute a sync query, returning an array of rows *)

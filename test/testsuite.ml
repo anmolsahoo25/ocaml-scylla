@@ -16,11 +16,11 @@ let test_header_parsing _ =
       (List.map Faraday.serialize_to_bigstring (to_bytes res_packet))
   in
   let parsed_req =
-    Angstrom.parse_bigstring ~consume:Angstrom.Consume.All parser bytes_req
+    Angstrom.parse_bigstring ~consume:Angstrom.Consume.All parse bytes_req
     |> get_ok
   in
   let parsed_res =
-    Angstrom.parse_bigstring ~consume:Angstrom.Consume.All parser bytes_res
+    Angstrom.parse_bigstring ~consume:Angstrom.Consume.All parse bytes_res
     |> get_ok
   in
   assert (parsed_req = req_packet);
@@ -37,7 +37,7 @@ let test_map_body_parsing _ =
       (List.map Faraday.serialize_to_bigstring (to_bytes res_packet))
   in
   let res_parsed =
-    Angstrom.parse_bigstring ~consume:Angstrom.Consume.All parser res_bytes
+    Angstrom.parse_bigstring ~consume:Angstrom.Consume.All parse res_bytes
     |> get_ok
   in
   assert (res_parsed = res_packet)
@@ -69,7 +69,7 @@ let test_scylla_connection_options _ =
   let b = Bytes.create 0x500 in
   let _l = input ic b 0 0x500 in
   let parsed_packet =
-    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parser
+    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parse
       (Bytes.to_string b)
     |> get_ok
   in
@@ -103,7 +103,7 @@ let test_scylla_startup _ =
   let b = Bytes.create 0x500 in
   let _l = input ic b 0 0x500 in
   let parsed_packet =
-    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parser
+    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parse
       (Bytes.to_string b)
     |> get_ok
   in
@@ -144,7 +144,7 @@ let test_scylla_prepare _ =
   let b = Bytes.create 0x500 in
   let _l = input ic b 0 0x500 in
   let start_res =
-    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parser
+    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parse
       (Bytes.to_string b)
     |> get_ok
   in
@@ -154,7 +154,7 @@ let test_scylla_prepare _ =
   let b = Bytes.create 0x500 in
   let _l = input ic b 0 0x500 in
   let prepare_res =
-    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parser
+    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parse
       (Bytes.to_string b)
     |> get_ok
   in
@@ -189,7 +189,7 @@ let test_scylla_query _ =
   let b = Bytes.create 0x500 in
   let _l = input ic b 0 0x500 in
   let start_res =
-    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parser
+    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parse
       (Bytes.to_string b)
     |> get_ok
   in
@@ -199,7 +199,7 @@ let test_scylla_query _ =
   let b = Bytes.create 0x500 in
   let _l = input ic b 0 0x500 in
   let query_res =
-    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parser
+    Angstrom.parse_string ~consume:Angstrom.Consume.Prefix parse
       (Bytes.to_string b)
     |> get_ok
   in

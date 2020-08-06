@@ -65,7 +65,7 @@ type consistency =
   | Local_serial
   | Local_one
 
-type query_params = { consistency : consistency ; }
+type query_params = { consistency : consistency }
 
 type body =
   | Empty

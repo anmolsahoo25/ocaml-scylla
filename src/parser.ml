@@ -166,7 +166,26 @@ let body op =
   | Result -> BE.any_int32 >>= fun k -> result_body k
   | _ -> return Empty
 
-let parser =
+let parse_header =
+  header >>= fun c ->
+  flags >>= fun f ->
+  stream >>= fun s ->
+  op >>= fun o ->
+  len >>= fun l ->
+  match c with
+  | '\x04' -> return (Req {flags = f; stream = s; op = o; body = Empty}, Int32.to_int l)
+  | '\x84' -> return (Res {flags = f; stream = s; op = o; body = Empty}, Int32.to_int l)
+  | _ -> fail "invalid header"
+
+let get_op = function Req {op; _} -> op | Res {op;_} -> op
+
+let update_body body = function Req r -> Req {r with body} | Res r -> Res {r with body}
+
+let parse_body r =
+  body (get_op r) >>= fun b ->
+  return (update_body b r)
+
+let parse =
   header >>= fun c ->
   flags >>= fun f ->
   stream >>= fun s ->
