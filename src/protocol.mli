@@ -1,4 +1,4 @@
-type bigstring = Angstrom.bigstring
+type bigstring = Bigstringaf.t
 
 type value =
   | Null

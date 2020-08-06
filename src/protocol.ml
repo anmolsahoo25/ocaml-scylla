@@ -1,4 +1,4 @@
-type bigstring = Angstrom.bigstring
+type bigstring = Bigstringaf.t
 
 let pp_bigstring fmt s = Format.pp_print_string fmt (Printf.sprintf "%s" (Bigstringaf.to_string s))
 

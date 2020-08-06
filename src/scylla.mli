@@ -1,8 +1,14 @@
 type t
 (** Type of a scylla connection *)
 
+type bigstring = Bigstringaf.t
+(** Type alias for bigstrings *)
+
 type value = Protocol.value
 (** Type of values stored in the database *)
+
+type rows = { table_spec : (bigstring * bigstring * bigstring) array ; values: value array array }
+(** Type of rows returned by query / execute statements *)
 
 val show_value : value -> string
 (** Pretty-printer for values *)
@@ -10,5 +16,5 @@ val show_value : value -> string
 val connect : ip:string -> port:int -> (t, string) result
 (** Connect to a scylla node *)
 
-val query : t -> query:string -> (value array array, string) result
+val query : t -> query:string -> (rows, string) result
 (** Execute a sync query, returning an array of rows *)

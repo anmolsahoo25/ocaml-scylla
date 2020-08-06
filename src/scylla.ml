@@ -2,7 +2,11 @@ open Result
 
 type t = {ic : in_channel ; oc : out_channel}
 
+type bigstring = Bigstringaf.t
+
 type value = Protocol.value
+
+type rows = {table_spec: (bigstring * bigstring * bigstring) array; values: value array array}
 
 let show_value = Protocol.show_value
 
@@ -51,7 +55,6 @@ let connect ~ip:ip ~port:port =
   let response = Protocol.((function Res {op = Ready ; _} -> true | _ -> false) res) in
   if response then Ok {ic ; oc} else Error "connection not established"
 
-
 let query conn ~query:(s) =
   let {ic; oc} = conn in
   let query = Bigstringaf.of_string s ~off:0 ~len:(String.length s) in
@@ -63,7 +66,7 @@ let query conn ~query:(s) =
   let response = Protocol.((function Res {op = Result; _} -> true | _ -> false) res) in
   if response then begin
     let body = get_body ic len res in
-    let rows = Protocol.((function Res {body = Result (Rows {values; _}) ; _} -> values | _ -> [||]) body) in
-    Ok rows
+    let (table_spec, values) = Protocol.((function Res {body = Result (Rows {values; table_spec; _}) ; _} -> (table_spec, values) | _ -> ([||], [||])) body) in
+    Ok {table_spec ; values}
   end else
     Error "query did not succeed"
