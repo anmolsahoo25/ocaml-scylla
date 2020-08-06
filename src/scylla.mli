@@ -4,6 +4,9 @@ type t
 type value = Protocol.value
 (** Type of values stored in the database *)
 
+val show_value = Protocol.show_value
+(** Pretty-printer for values *)
+
 val connect : ip:string -> port:int -> (t, string) result
 (** Connect to a scylla node *)
 

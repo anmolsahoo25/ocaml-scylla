@@ -4,6 +4,8 @@ type t = {ic : in_channel ; oc : out_channel}
 
 type value = Protocol.value
 
+let show_value = Protocol.show_value
+
 let cql_version_key = Bigstringaf.of_string "CQL_VERSION" ~off:0 ~len:11
 let cql_version_val = Bigstringaf.of_string "3.3.1" ~off:0 ~len:5
 
