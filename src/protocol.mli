@@ -24,6 +24,7 @@ type value =
   | List
   | Map
   | Set
+[@@deriving show]
 
 type flag = Compressed | Tracing | Custom | Warning
 

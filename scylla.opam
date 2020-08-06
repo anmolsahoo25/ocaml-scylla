@@ -25,6 +25,7 @@ depends: [
   "faraday" {>= "0.7.1"}
   "lwt" {>= "5.3.0"}
   "uutf" {>= "1.0.2"}
+  "ppx_deriving" {>= "4.5"}
 
   "ounit2" {with-test & >= "2.2.3"}
   "bigstring" {with-test & >= "0.3"}

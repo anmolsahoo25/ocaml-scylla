@@ -1,5 +1,7 @@
 type bigstring = Angstrom.bigstring
 
+let pp_bigstring fmt s = Format.pp_print_string fmt (Printf.sprintf "%s" (Bigstringaf.to_string s))
+
 type value =
   | Null
   | Ascii of bigstring
@@ -24,6 +26,7 @@ type value =
   | List
   | Map
   | Set
+[@@deriving show]
 
 type flag = Compressed | Tracing | Custom | Warning
 
