@@ -4,7 +4,7 @@ type t
 type value = Protocol.value
 (** Type of values stored in the database *)
 
-val show_value = Protocol.show_value
+val show_value : value -> string
 (** Pretty-printer for values *)
 
 val connect : ip:string -> port:int -> (t, string) result
