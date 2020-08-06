@@ -96,10 +96,10 @@ let create_query_packet query values =
         body = Query { query ; values ; params = default_query_params };
       })
 
-let query conn ~query:s =
+let query conn ~query:s ?values:(values = [||]) () =
   let { ic; oc } = conn in
   let query = Bigstringaf.of_string s ~off:0 ~len:(String.length s) in
-  let query_packet = create_query_packet query [||] in
+  let query_packet = create_query_packet query values in
   let buffer = serialize_to_bytes query_packet in
   output_bytes oc buffer;
   flush oc;

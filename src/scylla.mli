@@ -16,5 +16,5 @@ val show_value : value -> string
 val connect : ip:string -> port:int -> (t, string) result
 (** Connect to a scylla node *)
 
-val query : t -> query:string -> (rows, string) result
+val query : t -> query:string -> ?values:value array -> unit -> (rows, string) result
 (** Execute a sync query, returning an array of rows *)
