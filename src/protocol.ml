@@ -1,6 +1,7 @@
 type bigstring = Bigstringaf.t
 
-let pp_bigstring fmt s = Format.pp_print_string fmt (Printf.sprintf "%s" (Bigstringaf.to_string s))
+let pp_bigstring fmt s =
+  Format.pp_print_string fmt (Printf.sprintf "%s" (Bigstringaf.to_string s))
 
 type value =
   | Null
@@ -50,7 +51,11 @@ type opcode =
 
 type result_body =
   | Void
-  | Rows of {table_spec : (bigstring * bigstring * bigstring) array; values : value array array; paging_state : bigstring option}
+  | Rows of {
+      table_spec : (bigstring * bigstring * bigstring) array;
+      values : value array array;
+      paging_state : bigstring option;
+    }
   | Set_keyspace of bigstring
   | Prepared of { id : bigstring }
   | Schema_change
@@ -68,7 +73,12 @@ type consistency =
   | Local_serial
   | Local_one
 
-type query_params = { consistency : consistency }
+type query_params = {
+  consistency : consistency;
+  page_size : int option;
+  paging_state : bigstring option;
+  serial_consistency : consistency option;
+}
 
 type body =
   | Empty
@@ -77,7 +87,7 @@ type body =
   | LongString of bigstring
   | String of bigstring
   | Result of result_body
-  | Query of {query : bigstring ; params : query_params}
+  | Query of { query : bigstring; values : value array; params : query_params }
 
 type packet =
   | Req of { flags : flag list; stream : int; op : opcode; body : body }

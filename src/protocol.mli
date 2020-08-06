@@ -66,7 +66,12 @@ type consistency =
   | Local_serial
   | Local_one
 
-type query_params = { consistency : consistency }
+type query_params = {
+  consistency : consistency;
+  page_size : int option;
+  paging_state : bigstring option;
+  serial_consistency : consistency option;
+}
 
 type body =
   | Empty
@@ -75,7 +80,7 @@ type body =
   | LongString of bigstring
   | String of bigstring
   | Result of result_body
-  | Query of { query : bigstring; params : query_params }
+  | Query of { query : bigstring; values : value array; params : query_params }
 
 type packet =
   | Req of { flags : flag list; stream : int; op : opcode; body : body }
