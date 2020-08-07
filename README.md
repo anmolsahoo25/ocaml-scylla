@@ -1,5 +1,9 @@
 Scylla/Cassandra driver written in pure OCaml
 
+# WORK-IN-PROGRESS
+This driver is not complete, stable and completely tested. Will
+be posting updates as I feel it uses a reachable state.
+
 ## Quickstart
 Assuming a table `keyspace1.table` with schema `(id text, person text)`
 exists with the only value `(id1, person1)` then -
