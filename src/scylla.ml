@@ -1,6 +1,6 @@
 open Result
 
-type t = { ic : in_channel; oc : out_channel }
+type conn = { ic : in_channel; oc : out_channel }
 
 type bigstring = Bigstringaf.t
 
@@ -41,7 +41,7 @@ let get_header ic =
   let read_len = input ic in_buffer 0 0x9 in
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
-  Angstrom.parse_bigstring ~consume:Angstrom.Consume.All Parser.parse_header
+  Angstrom.parse_bigstring ~consume:Angstrom.Consume.All Parse.parse_header
     in_bigstring
   |> get_ok
 
@@ -52,7 +52,7 @@ let get_body ic len header =
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
   Angstrom.parse_bigstring ~consume:Angstrom.Consume.All
-    (Parser.parse_body header) in_bigstring
+    (Parse.parse_body header) in_bigstring
   |> get_ok
 
 let connect ~ip ~port =
@@ -119,3 +119,9 @@ let query conn ~query:s ?values:(values = [||]) () =
     in
     Ok { table_spec; values }
   else Error "query did not succeed"
+
+module Protocol = Protocol
+
+module Parse = Parse
+
+module Serialize = Serialize

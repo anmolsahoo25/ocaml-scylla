@@ -1,8 +1,8 @@
 open OUnit2
 open Result
-open Scylla__Protocol
-open Scylla__Serialize
-open Scylla__Parser
+open Scylla.Protocol
+open Scylla.Serialize
+open Scylla.Parse
 
 let cql_version_key =
   Bigstring.of_string "\x43\x51\x4C\x5F\x56\x45\x52\x53\x49\x4F\x4E"

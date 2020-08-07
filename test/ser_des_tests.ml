@@ -1,8 +1,8 @@
 open OUnit2
 open Result
-open Scylla__Protocol
-open Scylla__Serialize
-open Scylla__Parser
+open Scylla.Protocol
+open Scylla.Serialize
+open Scylla.Parse
 
 let test_header_parsing _ =
   let req_packet = Req { flags = []; stream = 0; op = Startup; body = Empty } in

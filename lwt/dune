@@ -1,4 +1,4 @@
 (library
   (name scylla_lwt_unix)
   (public_name scylla-lwt-unix)
-  (libraries scylla lwt lwt.unix))
+  (libraries scylla lwt lwt.unix angstrom-lwt-unix faraday-lwt-unix))

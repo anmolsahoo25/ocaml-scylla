@@ -1,4 +1,4 @@
-type t
+type conn
 (** Type of a scylla connection *)
 
 type bigstring = Bigstringaf.t
@@ -13,8 +13,17 @@ type rows = { table_spec : (bigstring * bigstring * bigstring) array ; values: v
 val show_value : value -> string
 (** Pretty-printer for values *)
 
-val connect : ip:string -> port:int -> (t, string) result
+val connect : ip:string -> port:int -> (conn, string) result
 (** Connect to a scylla node *)
 
-val query : t -> query:string -> ?values:value array -> unit -> (rows, string) result
+val query : conn -> query:string -> ?values:value array -> unit -> (rows, string) result
 (** Execute a sync query, returning an array of rows *)
+
+module Protocol = Protocol
+(** CQL v4 protocol definitions *)
+
+module Serialize = Serialize
+(** Serializers for protocol packets *)
+
+module Parse = Parse
+(** Parsers for protocol packets *)
