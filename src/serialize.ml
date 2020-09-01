@@ -48,6 +48,15 @@ let serialize_value serializer len = function
     BE.write_uint32 serializer (Int32.of_int l);
     write_bigstring serializer s;
     len := !len + 4 + l
+  | Int i ->
+    BE.write_uint32 serializer (Int32.of_int 4);
+    BE.write_uint32 serializer i;
+    len := !len + 4 + 4
+  | Blob s ->
+    let l = Bigstringaf.length s in
+    BE.write_uint32 serializer (Int32.of_int l);
+    write_bigstring serializer s;
+    len := !len + 4 + l
   | _ -> failwith "not implemented"
 
 let serialize_values serializer params values len =

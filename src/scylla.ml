@@ -51,9 +51,11 @@ let get_body ic len header =
   let read_len = input ic in_buffer 0 len in
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
-  Angstrom.parse_bigstring ~consume:Angstrom.Consume.All
-    (Parse.parse_body header) in_bigstring
-  |> get_ok
+  let p = Angstrom.parse_bigstring ~consume:Angstrom.Consume.All
+    (Parse.parse_body header) in_bigstring in
+  try
+    p |> get_ok
+    with _ -> (print_endline (p |> get_error)) ; Res {flags = [] ; stream = 0; op = Startup ; body = Empty}
 
 let connect ~ip ~port =
   let addr = Unix.ADDR_INET (Unix.inet_addr_of_string ip, port) in
@@ -93,10 +95,10 @@ let create_query_packet query values =
         flags = [];
         stream = 0;
         op = Query;
-        body = Query { query ; values ; params = default_query_params };
+        body = Query { query; values; params = default_query_params };
       })
 
-let query conn ~query:s ?values:(values = [||]) () =
+let query conn ~query:s ?(values = [||]) () =
   let { ic; oc } = conn in
   let query = Bigstringaf.of_string s ~off:0 ~len:(String.length s) in
   let query_packet = create_query_packet query values in
@@ -118,10 +120,10 @@ let query conn ~query:s ?values:(values = [||]) () =
           body)
     in
     Ok { table_spec; values }
-  else Error "query did not succeed"
+  else
+    let _ = get_body ic len res in
+    Error "query did not succeed"
 
 module Protocol = Protocol
-
 module Parse = Parse
-
 module Serialize = Serialize

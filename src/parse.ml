@@ -1,8 +1,6 @@
 open Protocol
 open Angstrom
 
-let empty = Bigstringaf.empty
-
 let header = char '\x04' <|> char '\x84'
 
 let flags = any_char >>= fun _ -> return []
@@ -67,27 +65,28 @@ let process_flags flags =
   let no_metadata = (logand flags 0b100l) = 0b100l in
   (global_table_spec, has_more_pages, no_metadata)
 
-let col_type_option = function
-    | 0 -> string
-    | 1 -> return empty
-    | 2 -> return empty
-    | 3 -> return empty
-    | 4 -> return empty
-    | 5 -> return empty
-    | 6 -> return empty
-    | 7 -> return empty
-    | 8 -> return empty
-    | 9 -> return empty
-    | 11 -> return empty
-    | 12 -> return empty
-    | 13 -> return empty
-    | 14 -> return empty
-    | 15 -> return empty
-    | 16 -> return empty
-    | 17 -> return empty
-    | 18 -> return empty
-    | 19 -> return empty
-    | 20 -> return empty
+let rec col_type_option = function
+    | 0x0
+    | 0x1
+    | 0x2
+    | 0x3
+    | 0x4
+    | 0x5
+    | 0x6
+    | 0x7
+    | 0x8
+    | 0x9
+    | 0xb
+    | 0xc
+    | 0xd
+    | 0xe
+    | 0xf
+    | 0x10
+    | 0x11
+    | 0x12
+    | 0x13
+    | 0x14 as p -> return p
+    | 0x22 -> BE.any_uint16 >>= fun o -> col_type_option o
     | _ -> fail "not implemented"
 
 let col_spec global_table_spec =
@@ -109,20 +108,23 @@ let process_col_spec global_table_spec num_cols =
   else
     return l
 
-let value t =
+let rec value t =
+  let (o,t) = t in
   BE.any_int32 >>= fun n ->
   let n = Int32.to_int n in
   if (n == -1) then
     return Null
   else
-    match t with
-    | 0 -> fail "not implemented"
-    | 1 -> take_bigstring n >>= fun b -> return (Ascii b)
-    | 2 -> BE.any_int64 >>= fun b -> return (Bigint b)
-    | 3 -> take_bigstring n >>= fun b -> return (Blob b)
-    | 4 -> any_char >>= fun c -> return (if (c = '\x00') then Boolean false else Boolean true)
-    | 5 -> BE.any_int64 >>= fun n -> return (Counter n)
-    | 13 -> take_bigstring n >>= fun s -> return (Varchar s)
+    match o with
+    | 0x0 -> fail "not implemented"
+    | 0x1 -> take_bigstring n >>= fun b -> return (Ascii b)
+    | 0x2 -> BE.any_int64 >>= fun b -> return (Bigint b)
+    | 0x3 -> take_bigstring n >>= fun b -> return (Blob b)
+    | 0x4 -> any_char >>= fun c -> return (if (c = '\x00') then Boolean false else Boolean true)
+    | 0x5 -> BE.any_int64 >>= fun n -> return (Counter n)
+    | 0x9 -> BE.any_int32 >>= fun n -> return (Int n)
+    | 0xd -> take_bigstring n >>= fun s -> return (Varchar s)
+    | 0x22 -> BE.any_int32 >>= fun n -> count (Int32.to_int n) (value (t, o)) >>= fun l -> return (Set l)
     | _ -> fail "not implemented"
 
 let row t =
@@ -141,7 +143,7 @@ let process_result_body () =
   else begin
     process_col_spec global_table_spec (Int32.to_int num_cols) >>= fun l ->
     BE.any_int32 >>= fun num_rows ->
-    let types = Array.map (fun (_,_,_,(o,_)) -> o) l in
+    let types = Array.map (fun (_,_,_,(o,s)) -> (o,s)) l in
     count (Int32.to_int num_rows) (row types) >>= fun values ->
     let table_spec = Array.map (fun (k,t,n,_) -> (k,t,n)) l in
     let values = Array.of_list values in
@@ -164,6 +166,10 @@ let body op =
   | Options -> string_map >>= fun l -> return (Map l)
   | Supported -> string_multimap >>= fun l -> return (MultiMap l)
   | Result -> BE.any_int32 >>= fun k -> result_body k
+  | Error -> BE.any_int32 >>= fun n -> string >>= fun s ->
+    print_endline ("error code " ^ (string_of_int (Int32.to_int n)));
+    print_endline ("error msg " ^ (Bigstringaf.to_string s));
+    return Empty
   | _ -> return Empty
 
 let parse_header =

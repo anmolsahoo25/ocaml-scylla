@@ -23,7 +23,7 @@ type value =
   | Tinyint of char
   | List
   | Map
-  | Set
+  | Set of value list
 [@@deriving show]
 
 type flag = Compressed | Tracing | Custom | Warning
