@@ -158,7 +158,7 @@ let result_body k = match k with
     BE.any_uint16 >>= fun n ->
     take_bigstring n >>= fun s ->
     return (Result (Prepared {id = s}))
-  | 5l -> return (Result Schema_change)
+  | 5l -> print_endline "schema change"; return (Result Schema_change)
   | _ -> fail "no such result"
 
 let body op =

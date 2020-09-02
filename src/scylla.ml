@@ -39,7 +39,6 @@ let get_header ic =
   let in_buffer = Bytes.create 0x9 in
   let in_bigstring = Bigstringaf.create 0x9 in
   let read_len = input ic in_buffer 0 0x9 in
-  Printf.printf "%S\n" (Bytes.to_string in_buffer);
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
   match (Angstrom.parse_bigstring ~consume:Angstrom.Consume.All Parse.parse_header
@@ -54,7 +53,6 @@ let get_body ic len header =
   let read_len = input ic in_buffer 0 len in
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
-  Printf.printf "%S\n" (Bytes.to_string in_buffer);
   let p = Angstrom.parse_bigstring ~consume:Angstrom.Consume.All
     (Parse.parse_body header) in_bigstring in
   try
