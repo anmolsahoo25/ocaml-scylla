@@ -58,7 +58,7 @@ let get_body ic len header =
     (Parse.parse_body header) in_bigstring in
   try
     p |> get_ok
-    with _ -> (print_endline "get_body: " ^ (p |> get_error)) ; Res {flags = [] ; stream = 0; op = Startup ; body = Empty}
+    with _ -> (print_endline ("get_body: " ^ (p |> get_error))) ; Res {flags = [] ; stream = 0; op = Startup ; body = Empty}
 
 let connect ~ip ~port =
   let addr = Unix.ADDR_INET (Unix.inet_addr_of_string ip, port) in
