@@ -165,12 +165,12 @@ let body op =
   match op with
   | Options -> string_map >>= fun l -> return (Map l)
   | Supported -> string_multimap >>= fun l -> return (MultiMap l)
-  | Result -> BE.any_int32 >>= fun k -> result_body k
+  | Result -> print_endline "result" ; BE.any_int32 >>= fun k -> result_body k
   | Error -> BE.any_int32 >>= fun n -> string >>= fun s ->
     print_endline ("error code " ^ (string_of_int (Int32.to_int n)));
     print_endline ("error msg " ^ (Bigstringaf.to_string s));
     return Empty
-  | _ -> print_endline "unknown" ; return Empty
+  | _ -> return Empty
 
 let parse_header =
   header >>= fun c ->
