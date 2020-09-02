@@ -150,7 +150,7 @@ let process_result_body () =
     return (Result (Rows {table_spec ; values; paging_state}))
   end
 
-let result_body k = match k with
+let result_body k l = match k with
   | 1l -> return (Result Void)
   | 2l -> process_result_body ()
   | 3l -> string >>= fun s -> return (Result (Set_keyspace s))
@@ -158,14 +158,14 @@ let result_body k = match k with
     BE.any_uint16 >>= fun n ->
     take_bigstring n >>= fun s ->
     return (Result (Prepared {id = s}))
-  | 5l -> print_endline "schema change"; return (Result Schema_change)
+  | 5l -> take_bigstring (l - 4) >>= fun _ -> return (Result Schema_change)
   | _ -> fail "no such result"
 
-let body op =
+let body op l =
   match op with
   | Options -> string_map >>= fun l -> return (Map l)
   | Supported -> string_multimap >>= fun l -> return (MultiMap l)
-  | Result -> BE.any_int32 >>= fun k -> result_body k
+  | Result -> BE.any_int32 >>= fun k -> result_body k l
   | Error -> BE.any_int32 >>= fun n -> string >>= fun s ->
     print_endline ("error code " ^ (string_of_int (Int32.to_int n)));
     print_endline ("error msg " ^ (Bigstringaf.to_string s));
@@ -187,8 +187,8 @@ let get_op = function Req {op; _} -> op | Res {op;_} -> op
 
 let update_body body = function Req r -> Req {r with body} | Res r -> Res {r with body}
 
-let parse_body r =
-  body (get_op r) >>= fun b ->
+let parse_body r l =
+  body (get_op r) l >>= fun b ->
   return (update_body b r)
 
 let parse =
@@ -203,7 +203,7 @@ let parse =
     | '\x84' -> return (Res { flags = f; stream = s; op = o; body = Empty })
     | _ -> fail "invalid header"
   else
-    body o >>= fun b ->
+    body o (Int32.to_int l) >>= fun b ->
     match c with
     | '\x04' -> return (Req { flags = f; stream = s; op = o; body = b })
     | '\x84' -> return (Res { flags = f; stream = s; op = o; body = b })

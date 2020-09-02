@@ -54,7 +54,7 @@ let get_body ic len header =
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
   let p = Angstrom.parse_bigstring ~consume:Angstrom.Consume.All
-    (Parse.parse_body header) in_bigstring in
+    (Parse.parse_body header len) in_bigstring in
   try
     p |> get_ok
     with _ -> (print_endline ("get_body: " ^ (p |> get_error))) ; Res {flags = [] ; stream = 0; op = Startup ; body = Empty}
