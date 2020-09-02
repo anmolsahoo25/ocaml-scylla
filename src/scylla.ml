@@ -39,11 +39,14 @@ let get_header ic =
   let in_buffer = Bytes.create 0x9 in
   let in_bigstring = Bigstringaf.create 0x9 in
   let read_len = input ic in_buffer 0 0x9 in
+  Printf.printf "%S\n" (Bytes.to_string in_buffer);
   Bigstringaf.blit_from_bytes in_buffer ~src_off:0 in_bigstring ~dst_off:0
     ~len:read_len;
-  Angstrom.parse_bigstring ~consume:Angstrom.Consume.All Parse.parse_header
-    in_bigstring
-  |> get_ok
+  match (Angstrom.parse_bigstring ~consume:Angstrom.Consume.All Parse.parse_header
+           in_bigstring) with
+  | Ok v -> v
+  | Error e -> print_endline e ; raise Not_found
+
 
 let get_body ic len header =
   let in_buffer = Bytes.create len in
