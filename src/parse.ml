@@ -170,7 +170,7 @@ let body op =
     print_endline ("error code " ^ (string_of_int (Int32.to_int n)));
     print_endline ("error msg " ^ (Bigstringaf.to_string s));
     return Empty
-  | _ -> return Empty
+  | _ -> print_endline "unknown" ; return Empty
 
 let parse_header =
   header >>= fun c ->
