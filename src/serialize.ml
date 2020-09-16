@@ -59,7 +59,7 @@ let serialize_value serializer len = function
     len := !len + 4 + l
   | Bigint i ->
     BE.write_uint32 serializer (Int32.of_int 4);
-    BE.write_uint64 serializer (Int64.of_int i);
+    BE.write_uint64 serializer i;
     len := !len + 4 + 8
   | _ -> failwith "not implemented"
 
