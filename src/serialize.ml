@@ -57,6 +57,10 @@ let serialize_value serializer len = function
     BE.write_uint32 serializer (Int32.of_int l);
     write_bigstring serializer s;
     len := !len + 4 + l
+  | Bigint i ->
+    BE.write_uint32 serializer (Int32.of_int 4);
+    BE.write_uint64 serializer (Int64.of_int i);
+    len := !len + 4 + 8
   | _ -> failwith "not implemented"
 
 let serialize_values serializer params values len =
