@@ -87,7 +87,7 @@ let default_query_params =
       consistency = One;
       page_size = None;
       paging_state = None;
-      serial_consistency = None;
+      serial_consistency = Some Serial;
     }
 
 let create_query_packet query values =
